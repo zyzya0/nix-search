@@ -1,12 +1,6 @@
-# Build output
+# Rust build output
+/target/
 /nix-search
-/build/
-*.o
-*.d
-*.a
-*.so
-*.so.*
-*.dSYM/
 
 # Nix
 /result
@@ -22,8 +16,5 @@
 .vscode/
 .DS_Store
 
-# Coverage / profilers
-*.gcda
-*.gcno
-*.gcov
+# Coverage and profilers
 *.profraw

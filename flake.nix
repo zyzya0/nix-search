@@ -15,19 +15,18 @@
         nixpkgs.lib.genAttrs systems (system: f nixpkgs.legacyPackages.${system});
     in {
       packages = forAllSystems (pkgs: {
-        default = pkgs.stdenv.mkDerivation {
+        default = pkgs.rustPlatform.buildRustPackage {
           pname = "nix-search";
           version = "1.1.0";
 
           src = ./.;
+          cargoLock.lockFile = ./Cargo.lock;
 
           nativeBuildInputs = [ pkgs.makeWrapper ];
 
-          preBuild = "make clean";
           doCheck = true;
-          checkPhase = "make test";
           installPhase = ''
-            make install PREFIX=$out
+            install -Dm755 target/release/nix-search $out/bin/nix-search
             wrapProgram $out/bin/nix-search \
               --prefix PATH : ${pkgs.lib.makeBinPath [ pkgs.nix ]}
           '';
@@ -50,7 +49,7 @@
 
       devShells = forAllSystems (pkgs: {
         default = pkgs.mkShell {
-          packages = [ pkgs.gcc pkgs.gnumake ];
+          packages = [ pkgs.cargo pkgs.rustc ];
         };
       });
     };

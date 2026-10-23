@@ -1,9 +1,9 @@
-# nix-search
+# nix-search (Rust)
 
 Показывает информацию о пакете в nixpkgs, который реально используется
 системой: имя, версию, описание и зависимости.
 
-Основная реализация — C11. В ветке `rust` лежит переписывание на Rust.
+Это ветка `rust` — переписывание C-версии из ветки `main` на Rust.
 
 ## Использование
 
@@ -74,50 +74,33 @@ nix-search python3Packages.requests
 ## Сборка
 
 ```sh
-make
-./nix-search hello
+cargo build --release
+./target/release/nix-search hello
 ```
 
 Тесты:
 
 ```sh
-make test
-```
-
-Установка:
-
-```sh
-sudo make install
+cargo test
 ```
 
 Или через Nix:
 
 ```sh
-nix run github:zyzya0/nix-search -- hello
-nix profile install github:zyzya0/nix-search
+nix build
+./result/bin/nix-search hello
+nix run github:zyzya0/nix-search/rust -- hello
 ```
 
 ## Структура
 
 ```text
-src/main.c      точка входа и форматирование вывода
-src/channel.c   автоопределение канала nixpkgs
-src/package.c   поиск пакета и метаданных
-src/json.c      небольшой JSON-парсер
-src/util.c      запуск процессов, строки, файлы
-src/*.h         заголовочные файлы
-tests/          C-тесты
+src/main.rs      точка входа и форматирование вывода
+src/channel.rs   автоопределение канала nixpkgs
+src/package.rs   поиск пакета, метаданные и JSON
+Cargo.toml       зависимости (serde_json)
+Cargo.lock       зафиксированные версии зависимостей
 ```
-
-## Ветка rust
-
-```sh
-git switch rust
-cargo build --release
-cargo test
-```
-
-Rust-версия повторяет функциональность C-версии и собирается через Cargo.
 
 ## Лицензия
 
