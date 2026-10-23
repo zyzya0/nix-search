@@ -1,0 +1,29 @@
+# Build output
+/nix-search
+/build/
+*.o
+*.d
+*.a
+*.so
+*.so.*
+*.dSYM/
+
+# Nix
+/result
+/result-*
+/.direnv/
+.direnv/
+
+# Editor and OS noise
+*~
+*.swp
+*.swo
+.idea/
+.vscode/
+.DS_Store
+
+# Coverage / profilers
+*.gcda
+*.gcno
+*.gcov
+*.profraw

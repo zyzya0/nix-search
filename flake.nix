@@ -1,0 +1,57 @@
+{
+  description = "Check whether a package exists in the nixpkgs channel used by the system";
+
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+
+  outputs = { self, nixpkgs }:
+    let
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+        "x86_64-darwin"
+        "aarch64-darwin"
+      ];
+      forAllSystems = f:
+        nixpkgs.lib.genAttrs systems (system: f nixpkgs.legacyPackages.${system});
+    in {
+      packages = forAllSystems (pkgs: {
+        default = pkgs.stdenv.mkDerivation {
+          pname = "nix-search";
+          version = "1.0.0";
+
+          src = ./.;
+
+          nativeBuildInputs = [ pkgs.makeWrapper ];
+
+          preBuild = "make clean";
+          doCheck = true;
+          checkPhase = "make test";
+          installPhase = ''
+            make install PREFIX=$out
+            wrapProgram $out/bin/nix-search \
+              --prefix PATH : ${pkgs.lib.makeBinPath [ pkgs.nix ]}
+          '';
+
+          meta = {
+            description = "Check whether a package exists in the nixpkgs channel used by the system";
+            license = pkgs.lib.licenses.mit;
+            mainProgram = "nix-search";
+            platforms = pkgs.lib.platforms.unix;
+          };
+        };
+      });
+
+      apps = forAllSystems (pkgs: {
+        default = {
+          type = "app";
+          program = "${self.packages.${pkgs.stdenv.hostPlatform.system}.default}/bin/nix-search";
+        };
+      });
+
+      devShells = forAllSystems (pkgs: {
+        default = pkgs.mkShell {
+          packages = [ pkgs.gcc pkgs.gnumake ];
+        };
+      });
+    };
+}
