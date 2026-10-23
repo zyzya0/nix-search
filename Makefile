@@ -11,9 +11,11 @@ BINDIR ?= $(PREFIX)/bin
 BUILD := build
 
 BIN := nix-search
-SRC := src/main.c src/util.c src/channel.c
+SRC := src/main.c src/util.c src/channel.c src/json.c src/package.c
 OBJ := $(SRC:src/%.c=$(BUILD)/%.o)
 
+TEST_JSON := $(BUILD)/test_json
+TEST_PACKAGE := $(BUILD)/test_package
 TEST_CHANNEL := $(BUILD)/test_channel
 
 .PHONY: all clean test install uninstall
@@ -29,10 +31,20 @@ $(BUILD)/%.o: src/%.c | $(BUILD)
 $(BUILD):
 	mkdir -p $(BUILD)
 
+$(TEST_JSON): tests/test_json.c src/json.c src/util.c | $(BUILD)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ tests/test_json.c src/json.c src/util.c
+
+$(TEST_PACKAGE): tests/test_package.c src/package.c src/json.c src/util.c \
+                 src/channel.c | $(BUILD)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ tests/test_package.c src/package.c \
+	      src/json.c src/util.c src/channel.c
+
 $(TEST_CHANNEL): tests/test_channel.c src/channel.c src/util.c | $(BUILD)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ tests/test_channel.c src/channel.c src/util.c
 
-test: $(BIN) $(TEST_CHANNEL)
+test: $(BIN) $(TEST_JSON) $(TEST_PACKAGE) $(TEST_CHANNEL)
+	./$(TEST_JSON)
+	./$(TEST_PACKAGE)
 	./$(TEST_CHANNEL)
 
 install: $(BIN)

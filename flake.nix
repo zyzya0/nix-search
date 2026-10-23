@@ -1,5 +1,5 @@
 {
-  description = "Check whether a package exists in the nixpkgs channel used by the system";
+  description = "Show package info from the nixpkgs channel used by the system";
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
@@ -17,7 +17,7 @@
       packages = forAllSystems (pkgs: {
         default = pkgs.stdenv.mkDerivation {
           pname = "nix-search";
-          version = "1.0.0";
+          version = "1.1.0";
 
           src = ./.;
 
@@ -33,7 +33,7 @@
           '';
 
           meta = {
-            description = "Check whether a package exists in the nixpkgs channel used by the system";
+            description = "Show package info from the nixpkgs channel used by the system";
             license = pkgs.lib.licenses.mit;
             mainProgram = "nix-search";
             platforms = pkgs.lib.platforms.unix;

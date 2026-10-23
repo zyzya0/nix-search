@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdio.h>
 
-#define NS_VERSION "1.0.0"
+#define NS_VERSION "1.1.0"
 
 void *xmalloc(size_t n);
 void *xcalloc(size_t n, size_t size);
